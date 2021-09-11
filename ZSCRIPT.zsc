@@ -60,7 +60,8 @@ class HDScorpion : HDWeapon
 		SCRProp_Mag,
 		SCRProp_Heat,
 		SCRProp_LoadType,
-		SCRProp_Hand
+		SCRProp_Hand,
+		SCRProp_Dot
 	}
 
 	override bool AddSpareWeapon(actor newowner) {return AddSpareWeaponRegular(newowner);}
@@ -122,12 +123,14 @@ class HDScorpion : HDWeapon
 		..WEPHELP_UNLOADUNLOAD;
 	}
 
+	override void SetReflexReticle(int which) { weaponstatus[SCRProp_Dot] = which; }
 	override void DrawSightPicture(HDStatusBar sb, HDWeapon hdw, HDPlayerPawn hpl, bool sightbob, vector2 bob, double fov, bool scopeview, actor hpc, string whichdot)
 	{
 		double dotoff = max(abs(bob.x), abs(bob.y));
-		if (dotoff < 3)
+		if (dotoff < 6)
 		{
-			sb.DrawImage("riflsit4", (0, 0) + bob * 3, sb.DI_SCREEN_CENTER | sb.DI_ITEM_CENTER, alpha: 0.8 - dotoff * 0.04, scale: (1.6, 1.6));
+			string whichdot = sb.ChooseReflexReticle(hdw.WeaponStatus[SCRProp_Dot]);
+			sb.DrawImage(whichdot, (0, 0) + bob, sb.DI_SCREEN_CENTER | sb.DI_ITEM_CENTER, alpha: 0.8 - dotoff * 0.04, scale: (1.6, 1.6));
 		}
 		sb.DrawImage("xh25", (0, 0) + bob, sb.DI_SCREEN_CENTER | sb.DI_ITEM_CENTER, scale: (1.6, 1.6));
 
