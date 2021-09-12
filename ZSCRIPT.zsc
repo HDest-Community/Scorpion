@@ -130,7 +130,7 @@ class HDScorpion : HDWeapon
 		if (dotoff < 6)
 		{
 			string whichdot = sb.ChooseReflexReticle(hdw.WeaponStatus[SCRProp_Dot]);
-			sb.DrawImage(whichdot, (0, 0) + bob, sb.DI_SCREEN_CENTER | sb.DI_ITEM_CENTER, alpha: 0.8 - dotoff * 0.04, scale: (1.6, 1.6));
+			sb.DrawImage(whichdot, (0, 0) + bob, sb.DI_SCREEN_CENTER | sb.DI_ITEM_CENTER, alpha: 0.8 - dotoff * 0.12);
 		}
 		sb.DrawImage("xh25", (0, 0) + bob, sb.DI_SCREEN_CENTER | sb.DI_ITEM_CENTER, scale: (1.6, 1.6));
 
