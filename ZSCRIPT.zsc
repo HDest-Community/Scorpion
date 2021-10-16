@@ -119,7 +119,7 @@ class HDScorpion : HDWeapon
 	{
 		return WEPHELP_FIRESHOOT
 		..WEPHELP_ALTFIRE.."  Work bolt\n"
-		..WEPHELP_RELOAD.."  Reload rounds/clip\n"
+		..WEPHELP_RELOAD.."  Reload rounds\n"
 		..WEPHELP_UNLOADUNLOAD;
 	}
 
