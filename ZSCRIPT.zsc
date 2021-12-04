@@ -333,7 +333,7 @@ class HDScorpion : HDWeapon
 			#### # 1 Offset(7, 72);
 			#### # 1 Offset(6, 80);
 			#### # 1 Offset(6, 88);
-			TNT1 # 25
+			TNT1 # 25;
 			TNT1 # 4
 			{
 				A_StartSound("Scorpion/BossLoad", 8, volume: 0.7);
