@@ -12,7 +12,7 @@ class ScorpionHandler : EventHandler
 		switch (e.Replacement.GetClassName())
 		{
 			case 'CellPackReplacer':
-				if (random[scorprand]() <= AceCore.GetScaledSpawnChance(-8, 8))
+				if (random[scorprand]() <= AceCore.GetScaledChance(-8, 8, acl_spawnscale_min, acl_spawnscale_max))
 				{
 					e.Replacement = "ScorpionSpawner";
 				}
