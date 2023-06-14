@@ -124,35 +124,81 @@ class HDScorpion : HDWeapon
 	}
 
 	override void SetReflexReticle(int which) { weaponstatus[SCRProp_Dot] = which; }
-	override void DrawSightPicture(HDStatusBar sb, HDWeapon hdw, HDPlayerPawn hpl, bool sightbob, vector2 bob, double fov, bool scopeview, actor hpc, string whichdot)
-	{
-		double dotoff = max(abs(bob.x), abs(bob.y));
-		if (dotoff < 6)
-		{
-			string whichdot = sb.ChooseReflexReticle(hdw.WeaponStatus[SCRProp_Dot]);
-			sb.DrawImage(whichdot, (0, 0) + bob, sb.DI_SCREEN_CENTER | sb.DI_ITEM_CENTER, alpha: 0.8 - dotoff * 0.12, col: 0xFF000000 | sb.crosshaircolor.GetInt());
-		}
-		sb.DrawImage("xh25", (0, 0) + bob, sb.DI_SCREEN_CENTER | sb.DI_ITEM_CENTER, scale: (1.6, 1.6));
+	
+	override void DrawSightPicture(
+		HDStatusBar sb,HDWeapon hdw,HDPlayerPawn hpl,
+		bool sightbob,vector2 bob,double fov,bool scopeview,actor hpc
+	){
+		int cx,cy,cw,ch;
+		[cx,cy,cw,ch]=Screen.GetClipRect();
+		sb.SetClipRect(
+			-16+bob.x,-64+bob.y,32,76,
+			sb.DI_SCREEN_CENTER
+		);
+		sb.drawimage(
+			"bsfrntsit",bob*1.14,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP
+		);
+		sb.SetClipRect(cx,cy,cw,ch);
 
-		if (scopeview)
-		{
-			int ScaledYOffset = 60;
-			int ScaledWidth = 89;
-			vector2 ScaleHalf = (0.5, 0.5);
+		sb.drawimage(
+			"bsbaksit",(0,0)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP,
+			alpha:0.9
+		);
+
+		if(scopeview){
+			int scaledwidth=89;
+			int scaledyoffset=60;
+			double degree=0.1*hdw.weaponstatus[BOSSS_ZOOM];
+			double deg=1/degree;
 			int cx,cy,cw,ch;
-			[cx, cy, cw, ch] = Screen.GetClipRect();
-			sb.SetClipRect(-44 + bob.x, 16 + bob.y, ScaledWidth, ScaledWidth, sb.DI_SCREEN_CENTER);
+			[cx,cy,cw,ch]=screen.GetClipRect();
+			sb.SetClipRect(-44+bob.x,16+bob.y,scaledwidth,scaledwidth,
+				sb.DI_SCREEN_CENTER
+			);
 
-			TexMan.SetCameraToTexture(hpc, "HDXHCAM3", 4);
-			sb.DrawImage("HDXHCAM3", (0, ScaledYOffset) + bob, sb.DI_SCREEN_CENTER |  sb.DI_ITEM_CENTER, scale: ScaleHalf);
-			sb.DrawImage("reticle1", (0, ScaledYOffset) + bob, sb.DI_SCREEN_CENTER | sb.DI_ITEM_CENTER, scale: ScaleHalf);
-			sb.DrawImage("scophole", (0, ScaledYOffset) + bob * 5, sb.DI_SCREEN_CENTER | sb.DI_ITEM_CENTER, scale: (1.5, 1.5));
-			Screen.SetClipRect(cx,cy,cw,ch);
+			sb.fill(color(255,0,0,0),
+				bob.x-44,scaledyoffset+bob.y-44,
+				88,88,sb.DI_SCREEN_CENTER|sb.DI_ITEM_CENTER
+			);
 
-			sb.DrawImage("libscope", (0, ScaledYOffset) + bob, sb.DI_SCREEN_CENTER | sb.DI_ITEM_CENTER, scale:(1.24, 1.24));
+			texman.setcameratotexture(hpc,"HDXCAM_BOSS",4);
+			let cam     = texman.CheckForTexture("HDXCAM_BOSS",TexMan.Type_Any);
+			let reticle = texman.CheckForTexture("bossret1",TexMan.Type_Any);
+
+			vector2 frontoffs=(0,scaledyoffset)+bob*3;
+
+			double camSize  = texman.GetSize(cam);
+			sb.DrawCircle(cam, frontoffs, 0.125,usePixelRatio:true);
+
+			//[2022-09-17] there's a glitch in GZDoom where if the reticle would be drawn completely off screen,
+			//the cliprect is ignored. The figure is a product of trial and error.
+			if((bob.y/fov)<0.4){
+				let reticleScale = camSize / texman.GetSize(reticle);
+				if(hdw.weaponstatus[0]&BOSSF_FRONTRETICLE){
+					sb.DrawCircle(reticle, frontoffs, .5*reticleScale, bob*deg*5-bob, 1.6*deg);
+				}else{
+					sb.DrawCircle(reticle, (0,scaledyoffset)+bob, .5*reticleScale,uvScale:.5);
+				}
+			}
+
+			//let holeScale    = camSize / texman.GetSize(hole);
+			//let hole    = texman.CheckForTexture("scophole",TexMan.Type_Any);
+			//sb.DrawCircle(hole, (0, scaledyoffset) + bob, .5 * holeScale, bob * 5, 1.5);
+
+
+			screen.SetClipRect(cx,cy,cw,ch);
+
+			sb.drawimage(
+				"bossscope",(0,scaledyoffset)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_CENTER,
+				scale:(1.24,1.24)
+			);
+
 		}
+		// the scope display is in 10ths of an arcminute.
+		// one dot = 6 arcminutes.
 	}
 
+	
 	override void DropOneAmmo(int amt)
 	{
 		if (owner)
